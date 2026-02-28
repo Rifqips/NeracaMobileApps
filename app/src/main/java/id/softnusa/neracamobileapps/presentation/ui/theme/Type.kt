@@ -1,4 +1,4 @@
-package id.softnusa.neracamobileapps.ui.theme
+package id.softnusa.neracamobileapps.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

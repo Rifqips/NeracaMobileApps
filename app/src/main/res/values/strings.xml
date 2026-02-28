@@ -1,3 +1,24 @@
 <resources>
+
     <string name="app_name">NeracaMobileApps</string>
+
+    <!-- Login -->
+    <string name="txt_login_title">Masuk</string>
+    <string name="txt_login_subtitle">Masukkan username dan password</string>
+    <string name="txt_login_username">Username</string>
+    <string name="txt_login_password">Password</string>
+    <string name="txt_login_remember_me">Ingat saya</string>
+    <string name="txt_login_forgot_password">Lupa Password?</string>
+    <string name="txt_login_button">Masuk</string>
+    <string name="txt_login_loading">Memproses...</string>
+    <string name="txt_login_success">Berhasil login</string>
+
+    <!-- Error -->
+    <string name="txt_error_invalid_credential">Username atau password salah</string>
+    <string name="txt_error_required_field">Field tidak boleh kosong</string>
+    <string name="txt_error_general">Terjadi kesalahan, silakan coba lagi</string>
+    <string name="txt_error_permission_denied">
+    Izin diperlukan untuk melanjutkan
+    </string>
+
 </resources>

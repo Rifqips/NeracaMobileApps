@@ -49,6 +49,11 @@ dependencies {
 
     implementation(libs.ktor.client.auth)
 
+    implementation(libs.ktor.client.okhttp)
+
+    debugImplementation(libs.chucker.debug)
+    releaseImplementation(libs.chucker.release)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

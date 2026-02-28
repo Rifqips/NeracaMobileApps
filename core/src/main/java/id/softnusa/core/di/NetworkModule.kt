@@ -1,5 +1,6 @@
 package id.softnusa.core.di
 
+import android.content.Context
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.Module
@@ -10,7 +11,6 @@ import id.softnusa.core.data.remote.model.request.prelogin.RequestTokentDto
 import id.softnusa.core.data.remote.model.response.prelogin.ResponseLoginDto
 import id.softnusa.core.di.qualifier.BaseUrl
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept
@@ -26,6 +26,10 @@ import kotlinx.coroutines.flow.first
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.call.body
+import io.ktor.client.engine.okhttp.OkHttp
+import okhttp3.OkHttpClient
+import com.chuckerteam.chucker.api.ChuckerInterceptor
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -34,11 +38,22 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideHttpClient(
+        @ApplicationContext context: Context,
         tokenDataStore: ApplicationDataStore,
         @BaseUrl baseUrl: String
     ): HttpClient {
 
-        return HttpClient(Android) {
+        return HttpClient(OkHttp) {
+
+            engine {
+                preconfigured = OkHttpClient.Builder()
+                    .addInterceptor(
+                        ChuckerInterceptor.Builder(context)
+                            .alwaysReadResponseBody(true)
+                            .build()
+                    )
+                    .build()
+            }
 
             install(ContentNegotiation) {
                 json(Json {

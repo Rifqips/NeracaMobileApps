@@ -7,6 +7,8 @@ activityCompose = "1.8.2"
 lifecycleRuntimeKtx = "2.8.7"
 composeBom = "2024.06.00"
 
+chucker = "4.0.0"
+ktorOkhttp = "2.3.12"
 ktor = "2.3.12"
 datastore = "1.1.1"
 coroutines = "1.8.1"
@@ -51,6 +53,11 @@ ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-conte
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
+
+chucker-debug = { group = "com.github.chuckerteam.chucker", name = "library", version.ref = "chucker" }
+chucker-release = { group = "com.github.chuckerteam.chucker", name = "library-no-op", version.ref = "chucker" }
+
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 
 # Kotlin Serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }

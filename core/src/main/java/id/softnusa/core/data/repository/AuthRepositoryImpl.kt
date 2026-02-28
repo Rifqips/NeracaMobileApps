@@ -9,8 +9,8 @@ import id.softnusa.core.domain.model.request.auth.RequestLogin
 import id.softnusa.core.domain.model.response.auth.ResponseLogin
 import id.softnusa.core.domain.repository.AuthRepository
 import id.softnusa.core.domain.util.Resource
-import id.softnusa.core.domain.util.safeApiCall
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -20,24 +20,30 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun login(
         request: RequestLogin
-    ): Flow<Resource<ResponseLogin>> {
+    ): Flow<Resource<ResponseLogin>> = flow {
 
-        return safeApiCall {
+        emit(Resource.Loading)
+
+        try {
 
             val response = authApi.login(request.toDto())
 
             val domain = response.toDomain { it.toDomain() }
 
-            if (!domain.success) {
-                throw Exception(domain.message)
+            if (domain.success && domain.data != null) {
+
+                tokenDataStore.saveToken(domain.data.accessToken)
+
+                emit(Resource.Success(domain.data))
+
+            } else {
+
+                emit(Resource.Error(domain.message))
             }
 
-            val data = domain.data
-                ?: throw Exception("Data is null")
+        } catch (e: Exception) {
 
-            tokenDataStore.saveToken(data.accessToken)
-
-            data
+            emit(Resource.Error(e.message ?: "Something went wrong"))
         }
     }
 }
