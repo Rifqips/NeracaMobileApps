@@ -21,7 +21,7 @@ android {
             buildConfigField(
                 "String",
                 "BASE_URL",
-                "\"https://dev.api.neraca.com/\""
+                "\"http://43.129.58.40:8081/\""
             )
         }
 
@@ -32,7 +32,7 @@ android {
             buildConfigField(
                 "String",
                 "BASE_URL",
-                "\"https://staging.api.neraca.com/\""
+                "\"http://43.129.58.40:8081/\""
             )
         }
 
@@ -41,7 +41,7 @@ android {
             buildConfigField(
                 "String",
                 "BASE_URL",
-                "\"https://api.neraca.com/\""
+                "\"http://43.129.58.40:8081/\""
             )
         }
     }
@@ -72,7 +72,7 @@ android {
 
 dependencies {
 
-    implementation(project(":core"))
+    api(project(":core"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -1,4 +1,7 @@
 package id.softnusa.neracamobileapps
 
-class NeracaApp {
-}
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class NeracaApp : Application()
