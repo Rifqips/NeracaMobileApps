@@ -9,7 +9,42 @@ plugins {
 
 android {
     namespace = "id.softnusa.neracamobileapps"
-    compileSdk = 34
+    compileSdk = 36
+
+    flavorDimensions += "environment"
+
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"https://dev.api.neraca.com/\""
+            )
+        }
+
+        create("staging") {
+            dimension = "environment"
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-staging"
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"https://staging.api.neraca.com/\""
+            )
+        }
+
+        create("prod") {
+            dimension = "environment"
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"https://api.neraca.com/\""
+            )
+        }
+    }
 
     defaultConfig {
         applicationId = "id.softnusa.neracamobileapps"
@@ -22,6 +57,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -52,4 +88,10 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     testImplementation(libs.junit)
+
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }
