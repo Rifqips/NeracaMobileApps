@@ -10,4 +10,10 @@ interface ApplicationDataStore {
     fun getToken(): Flow<String?>
 
     suspend fun clearToken()
+
+    fun isLoggedIn(): Flow<Boolean>
+
+    suspend fun setOnboardingCompleted()
+
+    fun isOnboardingCompleted(): Flow<Boolean>
 }
