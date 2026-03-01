@@ -25,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -43,6 +44,7 @@ import id.softnusa.neracamobileapps.presentation.ui.component.AppButton
 import id.softnusa.neracamobileapps.presentation.ui.component.AppPasswordField
 import id.softnusa.neracamobileapps.presentation.ui.component.AppSnackbarHost
 import id.softnusa.neracamobileapps.presentation.ui.component.AppTextField
+import id.softnusa.neracamobileapps.presentation.ui.component.showSnackbarAsync
 import id.softnusa.neracamobileapps.presentation.ui.theme.Primary
 import id.softnusa.neracamobileapps.presentation.ui.theme.TextSecondary
 
@@ -55,6 +57,7 @@ fun RegisterScreen(
 
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     val registerTitle = stringResource(R.string.txt_register_title)
     val registerSubtitle = stringResource(R.string.txt_register_subtitle)
@@ -92,7 +95,10 @@ fun RegisterScreen(
                     onRegisterSuccess()
                 }
                 is AuthEvent.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(event.message)
+                    snackbarHostState.showSnackbarAsync(
+                        scope = scope,
+                        message = event.message
+                    )
                 }
             }
         }

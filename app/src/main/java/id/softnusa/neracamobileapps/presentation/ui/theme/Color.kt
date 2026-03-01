@@ -2,9 +2,7 @@ package id.softnusa.neracamobileapps.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val PurpleStart = Color(0xFF7F56D9)
-val PurpleEnd = Color(0xFF9E77ED)
-
+val GrayInactive = Color(0xFF9E9E9E)
 val Primary = Color(0xFF7F56D9)
 val PrimaryLight = Color(0xFFE9D7FE)
 

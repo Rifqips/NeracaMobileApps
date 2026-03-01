@@ -69,10 +69,6 @@ fun LoginScreen(
     val forgotPasswordText = stringResource(R.string.txt_login_forgot_password)
     val loginButtonText = stringResource(R.string.txt_login_button)
 
-    val invalidCredentialText =
-        stringResource(R.string.txt_error_invalid_credential)
-    val generalErrorText =
-        stringResource(R.string.txt_error_general)
     val permissionDeniedText =
         stringResource(R.string.txt_error_permission_denied)
 
@@ -89,15 +85,9 @@ fun LoginScreen(
                 }
 
                 is AuthEvent.ShowSnackbar -> {
-
-                    val message = when (event.message) {
-                        "INVALID_CREDENTIAL" -> invalidCredentialText
-                        else -> generalErrorText
-                    }
-
                     snackbarHostState.showSnackbarAsync(
                         scope = scope,
-                        message = message
+                        message = event.message
                     )
                 }
             }

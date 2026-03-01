@@ -1,11 +1,13 @@
 package id.softnusa.neracamobileapps.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import id.softnusa.neracamobileapps.presentation.auth.forgot.ForgotPasswordScreen
 import id.softnusa.neracamobileapps.presentation.auth.login.LoginScreen
 import id.softnusa.neracamobileapps.presentation.auth.register.RegisterScreen
-import id.softnusa.neracamobileapps.presentation.home.HomeScreen
+import id.softnusa.neracamobileapps.presentation.mainfeature.MainScreen
 import id.softnusa.neracamobileapps.presentation.onboarding.OnboardingScreen
 import id.softnusa.neracamobileapps.presentation.splash.SplashScreen
 
@@ -72,7 +74,7 @@ fun AppNavGraph() {
         }
 
         composable(Screen.Home.route) {
-            HomeScreen()
+            MainScreen()
         }
     }
 }
