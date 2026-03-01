@@ -1,31 +1,48 @@
 package id.softnusa.core.domain.util
 
-import id.softnusa.core.data.remote.model.BaseResponseDto
-import io.ktor.client.call.body
-import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.*
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
-suspend fun <T> safeApiCall(
-    apiCall: suspend () -> T
-): Flow<Resource<T>> = flow {
+object SafeApiCall {
 
-    emit(Resource.Loading)
+    inline fun <T> execute(
+        crossinline apiCall: suspend () -> T
+    ): Flow<Resource<T>> = flow {
 
-    try {
-        val response = apiCall()
-        emit(Resource.Success(response))
+        emit(Resource.Loading)
 
-    } catch (e: ClientRequestException) {
+        try {
 
-        val errorBody = e.response.bodyAsText()
+            val response = apiCall()
+            emit(Resource.Success(response))
 
-        emit(Resource.Error(errorBody))
+        } catch (e: ClientRequestException) {
 
-    }catch (e: ClientRequestException) {
-        val errorResponse: BaseResponseDto<Unit> =
-            e.response.body()
-        emit(Resource.Error(errorResponse.message))
+            val message = parseError(e.response.bodyAsText())
+            emit(Resource.Error(message))
+
+        } catch (e: ServerResponseException) {
+
+            emit(Resource.Error("Server error"))
+
+        } catch (e: Exception) {
+
+            emit(Resource.Error(e.message ?: "Unknown error"))
+        }
+    }
+
+    fun parseError(json: String): String {
+        return try {
+            val jsonObject = Json.parseToJsonElement(json).jsonObject
+            jsonObject["message"]?.jsonPrimitive?.content
+                ?: "Request error"
+        } catch (e: Exception) {
+            "Request error"
+        }
     }
 }

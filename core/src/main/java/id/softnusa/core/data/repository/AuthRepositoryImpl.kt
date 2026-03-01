@@ -9,8 +9,11 @@ import id.softnusa.core.domain.model.request.auth.RequestLogin
 import id.softnusa.core.domain.model.response.auth.ResponseLogin
 import id.softnusa.core.domain.repository.AuthRepository
 import id.softnusa.core.domain.util.Resource
+import id.softnusa.core.domain.util.SafeApiCall
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -20,30 +23,38 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun login(
         request: RequestLogin
-    ): Flow<Resource<ResponseLogin>> = flow {
+    ): Flow<Resource<ResponseLogin>> {
 
-        emit(Resource.Loading)
-
-        try {
+        return SafeApiCall.execute {
 
             val response = authApi.login(request.toDto())
-
             val domain = response.toDomain { it.toDomain() }
 
-            if (domain.success && domain.data != null) {
-
-                tokenDataStore.saveToken(domain.data.accessToken)
-
-                emit(Resource.Success(domain.data))
-
-            } else {
-
-                emit(Resource.Error(domain.message))
+            if (!domain.success || domain.data == null) {
+                throw Exception(domain.message)
             }
 
-        } catch (e: Exception) {
+            CoroutineScope(Dispatchers.IO).launch {
+                tokenDataStore.saveToken(domain.data.accessToken)
+            }
 
-            emit(Resource.Error(e.message ?: "Something went wrong"))
+            domain.data
+        }
+    }
+
+    override fun register(
+        request: RequestLogin
+    ): Flow<Resource<ResponseLogin>> {
+
+        return SafeApiCall.execute {
+
+            val response = authApi.register(request.toDto())
+            val domain = response.toDomain { it.toDomain() }
+
+            if (!domain.success || domain.data == null) {
+                throw Exception(domain.message)
+            }
+            domain.data
         }
     }
 }

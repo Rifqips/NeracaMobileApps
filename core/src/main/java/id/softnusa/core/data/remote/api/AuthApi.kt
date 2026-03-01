@@ -10,6 +10,10 @@ interface AuthApi {
         request: RequestLoginDto
     ): BaseResponseDto<ResponseLoginDto>
 
+    suspend fun register(
+        request: RequestLoginDto
+    ): BaseResponseDto<ResponseLoginDto>
+
     suspend fun refreshToken(
         refreshToken: String
     ): BaseResponseDto<ResponseLoginDto>

@@ -23,6 +23,12 @@ class AuthApiImpl @Inject constructor(
         }.body()
     }
 
+    override suspend fun register(request: RequestLoginDto): BaseResponseDto<ResponseLoginDto> {
+        return client.post("auth/register") {
+            setBody(request)
+        }.body()
+    }
+
     override suspend fun refreshToken(
         refreshToken: String
     ): BaseResponseDto<ResponseLoginDto> {

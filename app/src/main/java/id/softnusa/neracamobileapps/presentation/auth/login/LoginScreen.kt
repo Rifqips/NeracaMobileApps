@@ -1,10 +1,11 @@
-package id.softnusa.neracamobileapps.presentation.auth
+package id.softnusa.neracamobileapps.presentation.auth.login
 
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,14 +14,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -36,26 +34,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import id.softnusa.core.domain.util.AuthEvent
 import id.softnusa.neracamobileapps.R
 import id.softnusa.neracamobileapps.presentation.ui.component.AppButton
-import id.softnusa.neracamobileapps.presentation.ui.component.AppSnackbarHost
 import id.softnusa.neracamobileapps.presentation.ui.component.AppTextField
 import id.softnusa.neracamobileapps.presentation.ui.theme.Primary
 import id.softnusa.neracamobileapps.presentation.ui.theme.TextSecondary
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import id.softnusa.neracamobileapps.presentation.auth.AuthViewModel
 import id.softnusa.neracamobileapps.presentation.ui.component.AppPasswordField
+import id.softnusa.neracamobileapps.presentation.ui.component.AppSnackbarHost
+import id.softnusa.neracamobileapps.presentation.ui.component.showSnackbarAsync
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
-    onLoginSuccess: () -> Unit
+    viewModel: AuthViewModel = hiltViewModel(),
+    onLoginSuccess: () -> Unit,
+    onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit
 ) {
 
     val state by viewModel.uiState.collectAsState()
@@ -65,13 +64,10 @@ fun LoginScreen(
 
     val loginTitle = stringResource(R.string.txt_login_title)
     val loginSubtitle = stringResource(R.string.txt_login_subtitle)
-    val usernameLabel = stringResource(R.string.txt_login_username)
+    val emailLabel = stringResource(R.string.txt_login_email)
     val passwordLabel = stringResource(R.string.txt_login_password)
-    val rememberMeText = stringResource(R.string.txt_login_remember_me)
     val forgotPasswordText = stringResource(R.string.txt_login_forgot_password)
     val loginButtonText = stringResource(R.string.txt_login_button)
-    val loginSuccessText = stringResource(R.string.txt_login_success)
-    var passwordVisible by remember { mutableStateOf(false) }
 
     val invalidCredentialText =
         stringResource(R.string.txt_error_invalid_credential)
@@ -80,24 +76,31 @@ fun LoginScreen(
     val permissionDeniedText =
         stringResource(R.string.txt_error_permission_denied)
 
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var rememberMe by remember { mutableStateOf(false) }
 
-    LaunchedEffect(state.data) {
-        state.data?.let {
-            snackbarHostState.showSnackbar(loginSuccessText)
-            onLoginSuccess()
-        }
-    }
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
 
-    LaunchedEffect(state.errorMessage) {
-        state.errorMessage?.let { error ->
-            val message = when (error) {
-                "INVALID_CREDENTIAL" -> invalidCredentialText
-                else -> generalErrorText
+            when (event) {
+
+                is AuthEvent.NavigateHome -> {
+                    onLoginSuccess()
+                }
+
+                is AuthEvent.ShowSnackbar -> {
+
+                    val message = when (event.message) {
+                        "INVALID_CREDENTIAL" -> invalidCredentialText
+                        else -> generalErrorText
+                    }
+
+                    snackbarHostState.showSnackbarAsync(
+                        scope = scope,
+                        message = message
+                    )
+                }
             }
-            snackbarHostState.showSnackbar(message)
         }
     }
 
@@ -127,7 +130,6 @@ fun LoginScreen(
             }
         }
     }
-
     Scaffold(
         snackbarHost = { AppSnackbarHost(snackbarHostState) }
     ) { padding ->
@@ -140,8 +142,6 @@ fun LoginScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center
         ) {
-
-            Spacer(modifier = Modifier.height(40.dp))
 
             Text(
                 text = loginTitle,
@@ -159,9 +159,9 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             AppTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = usernameLabel
+                value = email,
+                onValueChange = { email = it },
+                label = emailLabel
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -176,26 +176,15 @@ fun LoginScreen(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.End
             ) {
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = rememberMe,
-                        onCheckedChange = { rememberMe = it }
-                    )
-                    Text(
-                        text = rememberMeText,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
                 Text(
                     text = forgotPasswordText,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Primary
+                    color = Primary,
+                    modifier = Modifier.clickable {
+                        onNavigateToForgotPassword()
+                    }
                 )
             }
 
@@ -204,13 +193,35 @@ fun LoginScreen(
             AppButton(
                 text = loginButtonText,
                 isLoading = state.isLoading,
-                enabled = username.isNotBlank() && password.isNotBlank(),
+                enabled = email.isNotBlank() && password.isNotBlank(),
                 onClick = {
-                    viewModel.login(username, password)
+                    viewModel.login(email, password)
                 }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+                Text(
+                    text = "Belum punya akun?",
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                Text(
+                    text = "Register",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Primary,
+                    modifier = Modifier.clickable {
+                        onNavigateToRegister()
+                    }
+                )
+            }
         }
     }
 }

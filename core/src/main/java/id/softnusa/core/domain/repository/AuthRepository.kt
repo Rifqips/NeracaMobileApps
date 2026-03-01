@@ -10,4 +10,8 @@ interface AuthRepository {
     fun login(
         request: RequestLogin
     ): Flow<Resource<ResponseLogin>>
+
+    fun register(
+        request: RequestLogin
+    ): Flow<Resource<ResponseLogin>>
 }
