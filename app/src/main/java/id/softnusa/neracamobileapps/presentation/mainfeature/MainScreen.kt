@@ -8,9 +8,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import id.softnusa.neracamobileapps.presentation.mainfeature.budget.BudgetScreen
 import id.softnusa.neracamobileapps.presentation.mainfeature.financial.FinancialScreen
 import id.softnusa.neracamobileapps.presentation.mainfeature.home.HomeScreen
+import id.softnusa.neracamobileapps.presentation.mainfeature.monitoring.MonitoringScreen
 import id.softnusa.neracamobileapps.presentation.mainfeature.profile.ProfileScreen
 import id.softnusa.neracamobileapps.presentation.navigation.bottomnav.BottomNavItem
 import id.softnusa.neracamobileapps.presentation.navigation.bottomnav.NeracaBottomBar
@@ -32,7 +32,7 @@ fun MainScreen(
         ) {
             composable("home") { HomeScreen() }
             composable("financial") { FinancialScreen() }
-            composable("budget") { BudgetScreen() }
+            composable("budget") { MonitoringScreen() }
             composable("profile") { ProfileScreen(navController = navController) }
         }
     }

@@ -56,7 +56,7 @@ fun CashflowSection() {
 }
 
 @Composable
-private fun CashBar(
+fun CashBar(
     label: String,
     income: Int,
     expense: Int
