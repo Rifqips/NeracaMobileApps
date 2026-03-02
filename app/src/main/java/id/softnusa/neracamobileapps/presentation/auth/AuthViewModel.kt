@@ -31,7 +31,7 @@ class AuthViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            repository.login(RequestLogin(email, password))
+            repository.login(RequestLogin(password, email))
                 .collect { result ->
 
                     when (result) {

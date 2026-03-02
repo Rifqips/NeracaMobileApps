@@ -74,7 +74,7 @@ fun AppNavGraph() {
         }
 
         composable(Screen.Home.route) {
-            MainScreen()
+            MainScreen(navController = navController)
         }
     }
 }

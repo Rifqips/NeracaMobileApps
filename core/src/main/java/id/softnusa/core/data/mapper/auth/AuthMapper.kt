@@ -1,9 +1,11 @@
 package id.softnusa.core.data.mapper.auth
 
 import id.softnusa.core.data.remote.model.request.prelogin.RequestLoginDto
+import id.softnusa.core.data.remote.model.request.prelogin.RequestLogoutDto
 import id.softnusa.core.data.remote.model.request.prelogin.RequestTokentDto
 import id.softnusa.core.data.remote.model.response.prelogin.ResponseLoginDto
 import id.softnusa.core.domain.model.request.auth.RequestLogin
+import id.softnusa.core.domain.model.request.auth.RequestLogout
 import id.softnusa.core.domain.model.request.auth.RequestToken
 import id.softnusa.core.domain.model.response.auth.ResponseLogin
 
@@ -24,6 +26,12 @@ fun ResponseLoginDto.toDomain(): ResponseLogin {
 
 fun RequestToken.toDto(): RequestTokentDto{
     return RequestTokentDto(
+        refreshToken = refreshToken
+    )
+}
+
+fun RequestLogout.toDto() : RequestLogoutDto{
+    return RequestLogoutDto(
         refreshToken = refreshToken
     )
 }

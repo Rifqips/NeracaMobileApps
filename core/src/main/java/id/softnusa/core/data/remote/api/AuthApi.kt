@@ -2,7 +2,9 @@ package id.softnusa.core.data.remote.api
 
 import id.softnusa.core.data.remote.model.BaseResponseDto
 import id.softnusa.core.data.remote.model.request.prelogin.RequestLoginDto
+import id.softnusa.core.data.remote.model.request.prelogin.RequestLogoutDto
 import id.softnusa.core.data.remote.model.response.prelogin.ResponseLoginDto
+import id.softnusa.core.domain.model.request.auth.RequestLogout
 
 interface AuthApi {
 
@@ -16,5 +18,9 @@ interface AuthApi {
 
     suspend fun refreshToken(
         refreshToken: String
+    ): BaseResponseDto<ResponseLoginDto>
+
+    suspend fun logout(
+        request: RequestLogoutDto
     ): BaseResponseDto<ResponseLoginDto>
 }

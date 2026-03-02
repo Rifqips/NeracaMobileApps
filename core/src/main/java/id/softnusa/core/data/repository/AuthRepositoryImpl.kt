@@ -6,6 +6,7 @@ import id.softnusa.core.data.mapper.auth.toDto
 import id.softnusa.core.data.mapper.toDomain
 import id.softnusa.core.data.remote.api.AuthApi
 import id.softnusa.core.domain.model.request.auth.RequestLogin
+import id.softnusa.core.domain.model.request.auth.RequestLogout
 import id.softnusa.core.domain.model.response.auth.ResponseLogin
 import id.softnusa.core.domain.repository.AuthRepository
 import id.softnusa.core.domain.util.Resource
@@ -13,6 +14,7 @@ import id.softnusa.core.domain.util.SafeApiCall
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -54,6 +56,24 @@ class AuthRepositoryImpl @Inject constructor(
             if (!domain.success || domain.data == null) {
                 throw Exception(domain.message)
             }
+            domain.data
+        }
+    }
+
+    override fun logout(): Flow<Resource<ResponseLogin?>> {
+        return SafeApiCall.execute {
+
+            val token = tokenDataStore.getToken().first() ?: ""
+            val request = RequestLogout(refreshToken = token)
+            val response = authApi.logout(request.toDto())
+            val domain = response.toDomain { it.toDomain() }
+
+            if (!domain.success) {
+                throw Exception(domain.message)
+            }
+
+            tokenDataStore.clearToken()
+
             domain.data
         }
     }
