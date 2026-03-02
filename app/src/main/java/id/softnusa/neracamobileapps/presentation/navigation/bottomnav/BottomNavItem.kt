@@ -23,35 +23,28 @@ sealed class BottomNavItem(
 ) {
     object Home : BottomNavItem(
         "home",
-        "Home",
+        "Beranda",
         Icons.Outlined.Home,
         Icons.Filled.Home
     )
 
     object Financial : BottomNavItem(
         "financial",
-        "Financial",
+        "Keungan",
         Icons.Outlined.Receipt,
         Icons.Filled.Receipt
     )
 
-    object Wallet : BottomNavItem(
-        "wallet",
-        "Wallet",
-        Icons.Outlined.AccountBalanceWallet,
-        Icons.Filled.AccountBalanceWallet
-    )
-
     object Budget : BottomNavItem(
         "budget",
-        "Budget",
+        "Monitoring",
         Icons.Outlined.BarChart,
         Icons.Filled.BarChart
     )
 
     object Profile : BottomNavItem(
         "profile",
-        "Profile",
+        "Akun",
         Icons.Outlined.Person,
         Icons.Filled.Person
     )

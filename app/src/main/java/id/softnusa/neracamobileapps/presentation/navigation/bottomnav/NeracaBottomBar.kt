@@ -1,5 +1,6 @@
 package id.softnusa.neracamobileapps.presentation.navigation.bottomnav
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -7,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,13 +28,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import id.softnusa.neracamobileapps.presentation.ui.theme.GrayInactive
 import id.softnusa.neracamobileapps.presentation.ui.theme.Primary
-
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun NeracaBottomBar(
     navController: NavHostController
@@ -40,7 +43,6 @@ fun NeracaBottomBar(
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Financial,
-        BottomNavItem.Wallet,
         BottomNavItem.Budget,
         BottomNavItem.Profile
     )
@@ -51,31 +53,32 @@ fun NeracaBottomBar(
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }
         .coerceAtLeast(0)
 
-    val indicatorOffset by animateDpAsState(
-        targetValue = (selectedIndex * 72).dp,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-        label = "indicator"
-    )
-
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
             .height(72.dp)
             .background(Color.White)
     ) {
 
+        val itemWidth = maxWidth / items.size
+
+        val indicatorOffset by animateDpAsState(
+            targetValue = itemWidth * selectedIndex,
+            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+            label = "indicator"
+        )
+
         Box(
             modifier = Modifier
                 .offset(x = indicatorOffset)
                 .padding(top = 6.dp)
-                .width(72.dp)
+                .width(itemWidth)
                 .height(3.dp)
                 .background(Primary, RoundedCornerShape(50))
         )
 
         Row(
             modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { item ->
@@ -84,7 +87,7 @@ fun NeracaBottomBar(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .width(72.dp)
+                        .weight(1f)
                         .clickable {
                             navController.navigate(item.route) {
                                 popUpTo(navController.graph.startDestinationId) {
