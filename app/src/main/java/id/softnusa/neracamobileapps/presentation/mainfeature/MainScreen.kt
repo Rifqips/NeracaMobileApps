@@ -1,5 +1,7 @@
 package id.softnusa.neracamobileapps.presentation.mainfeature
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -14,6 +16,7 @@ import id.softnusa.neracamobileapps.presentation.mainfeature.monitoring.Monitori
 import id.softnusa.neracamobileapps.presentation.mainfeature.profile.ProfileScreen
 import id.softnusa.neracamobileapps.presentation.navigation.bottomnav.BottomNavItem
 import id.softnusa.neracamobileapps.presentation.navigation.bottomnav.NeracaBottomBar
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(
     navController: NavHostController
@@ -30,7 +33,7 @@ fun MainScreen(
             startDestination = BottomNavItem.Home.route,
             modifier = Modifier.padding(padding)
         ) {
-            composable("home") { HomeScreen() }
+            composable("home") { HomeScreen(navController = navController) }
             composable("financial") { FinancialScreen() }
             composable("budget") { MonitoringScreen() }
             composable("profile") { ProfileScreen(navController = navController) }

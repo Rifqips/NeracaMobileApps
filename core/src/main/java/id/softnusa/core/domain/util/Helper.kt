@@ -1,5 +1,7 @@
 package id.softnusa.core.domain.util
 
+import java.text.NumberFormat
+import java.util.*
 fun isValidEmail(email: String): Boolean {
     return android.util.Patterns.EMAIL_ADDRESS
         .matcher(email)
@@ -15,4 +17,11 @@ fun calculatePasswordStrength(password: String): Int {
     if (password.any { "!@#$%^&*()_+".contains(it) }) score++
 
     return score
+}
+
+
+fun formatRupiah(number: Long): String {
+    val format = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+    format.maximumFractionDigits = 0
+    return format.format(number)
 }

@@ -1,6 +1,7 @@
 package id.softnusa.neracamobileapps.presentation.mainfeature.home.section
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,10 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-
+import androidx.navigation.NavHostController
+import id.softnusa.neracamobileapps.presentation.navigation.Screen
 
 @Composable
-fun QuickActionSection() {
+fun QuickActionSection(navController: NavHostController) {
     Surface(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -32,16 +34,32 @@ fun QuickActionSection() {
                 .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            QuickActionItem("Tambah Dana", Icons.Default.Add)
-            QuickActionItem("Anggaran", Icons.Default.AccountBalance)
-            QuickActionItem("Riwayat", Icons.Default.History)
+
+            QuickActionItem(
+                "Buat Transaksi",
+                Icons.Default.Add
+            ) {
+                navController.navigate(Screen.Transaction.route)
+            }
+
+            QuickActionItem("Anggaran", Icons.Default.AccountBalance) {}
+
+            QuickActionItem("Riwayat", Icons.Default.History) {}
         }
     }
 }
 
 @Composable
-private fun QuickActionItem(title: String, icon: ImageVector) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+private fun QuickActionItem(
+    title: String,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClick() }
+    ) {
+
         Box(
             modifier = Modifier
                 .size(48.dp)
@@ -50,7 +68,12 @@ private fun QuickActionItem(title: String, icon: ImageVector) {
         ) {
             Icon(icon, contentDescription = null, tint = Color.White)
         }
+
         Spacer(modifier = Modifier.height(6.dp))
-        Text(text = title, style = MaterialTheme.typography.bodySmall)
+
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

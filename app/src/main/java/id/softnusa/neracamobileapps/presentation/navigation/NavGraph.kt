@@ -1,5 +1,7 @@
 package id.softnusa.neracamobileapps.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,7 +12,9 @@ import id.softnusa.neracamobileapps.presentation.auth.register.RegisterScreen
 import id.softnusa.neracamobileapps.presentation.mainfeature.MainScreen
 import id.softnusa.neracamobileapps.presentation.onboarding.OnboardingScreen
 import id.softnusa.neracamobileapps.presentation.splash.SplashScreen
+import id.softnusa.neracamobileapps.presentation.transaction.TransactionScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavGraph() {
 
@@ -75,6 +79,10 @@ fun AppNavGraph() {
 
         composable(Screen.Home.route) {
             MainScreen(navController = navController)
+        }
+
+        composable(Screen.Transaction.route) {
+            TransactionScreen(navController = navController)
         }
     }
 }
