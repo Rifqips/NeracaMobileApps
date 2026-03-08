@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import id.softnusa.neracamobileapps.presentation.auth.forgot.ForgotPasswordScreen
 import id.softnusa.neracamobileapps.presentation.auth.login.LoginScreen
 import id.softnusa.neracamobileapps.presentation.auth.register.RegisterScreen
+import id.softnusa.neracamobileapps.presentation.history.HistoryTransactionScreen
 import id.softnusa.neracamobileapps.presentation.mainfeature.MainScreen
 import id.softnusa.neracamobileapps.presentation.onboarding.OnboardingScreen
 import id.softnusa.neracamobileapps.presentation.splash.SplashScreen
@@ -84,5 +85,10 @@ fun AppNavGraph() {
         composable(Screen.Transaction.route) {
             TransactionScreen(navController = navController)
         }
+
+        composable(Screen.History.route) {
+            HistoryTransactionScreen(navController = navController)
+        }
+
     }
 }

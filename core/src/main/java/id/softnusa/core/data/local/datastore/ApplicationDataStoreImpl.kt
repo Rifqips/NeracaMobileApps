@@ -16,6 +16,8 @@ class ApplicationDataStoreImpl @Inject constructor(
     companion object {
         private val TOKEN_KEY = stringPreferencesKey("auth_token")
 
+        private val USERNAME_KEY = stringPreferencesKey("username_key")
+
         private val ONBOARDING_KEY =
             booleanPreferencesKey("onboarding_completed")
     }
@@ -53,6 +55,18 @@ class ApplicationDataStoreImpl @Inject constructor(
     override fun isOnboardingCompleted(): Flow<Boolean> {
         return dataStore.data.map { prefs ->
             prefs[ONBOARDING_KEY] ?: false
+        }
+    }
+
+    override suspend fun saveUsername(username: String) {
+        dataStore.edit { preferences ->
+            preferences[USERNAME_KEY] = username
+        }
+    }
+
+    override fun getUsername(): Flow<String?> {
+        return dataStore.data.map { preferences ->
+            preferences[USERNAME_KEY]
         }
     }
 }

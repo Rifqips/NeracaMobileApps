@@ -44,7 +44,9 @@ fun QuickActionSection(navController: NavHostController) {
 
             QuickActionItem("Anggaran", Icons.Default.AccountBalance) {}
 
-            QuickActionItem("Riwayat", Icons.Default.History) {}
+            QuickActionItem("Riwayat", Icons.Default.History) {
+                navController.navigate(Screen.History.route)
+            }
         }
     }
 }

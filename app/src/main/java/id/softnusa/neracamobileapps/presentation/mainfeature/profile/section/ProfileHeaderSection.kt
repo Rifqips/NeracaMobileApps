@@ -9,15 +9,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import id.softnusa.neracamobileapps.presentation.auth.AuthViewModel
 
 @Composable
-fun ProfileHeaderSection() {
+fun ProfileHeaderSection(
+    viewModel: AuthViewModel = hiltViewModel()
+) {
+
+    val username by viewModel.getUsername().collectAsState(initial = "Memuat...")
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,7 +47,7 @@ fun ProfileHeaderSection() {
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "John Doe",
+                text = username ?: "-",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )

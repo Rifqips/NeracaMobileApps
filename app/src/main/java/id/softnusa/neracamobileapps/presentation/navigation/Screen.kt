@@ -10,4 +10,6 @@ sealed class Screen(val route: String) {
     object ForgotPw : Screen("forgot_pw")
 
     object Transaction : Screen("transaction")
+
+    object History : Screen("history_transaction")
 }

@@ -16,4 +16,6 @@ interface AuthRepository {
     ): Flow<Resource<ResponseLogin>>
 
     fun logout(): Flow<Resource<ResponseLogin?>>
+
+    fun getUsername() : Flow<String?>
 }

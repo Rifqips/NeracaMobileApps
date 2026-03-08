@@ -16,4 +16,7 @@ interface ApplicationDataStore {
     suspend fun setOnboardingCompleted()
 
     fun isOnboardingCompleted(): Flow<Boolean>
+
+    suspend fun saveUsername(username : String)
+    fun getUsername() : Flow<String?>
 }

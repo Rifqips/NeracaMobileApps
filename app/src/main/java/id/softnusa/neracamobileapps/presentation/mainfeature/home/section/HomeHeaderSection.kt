@@ -4,13 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import id.softnusa.neracamobileapps.presentation.auth.AuthViewModel
 
 @Composable
-fun HomeHeaderSection() {
+fun HomeHeaderSection(
+    viewModel: AuthViewModel = hiltViewModel()
+) {
+    val username by viewModel.getUsername().collectAsState(initial = "Memuat...")
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -27,17 +34,17 @@ fun HomeHeaderSection() {
     ) {
         Column {
             Text(
-                text = "Selamat Pagi",
+                text = "Selamat Datang,",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White
             )
             Text(
-                text = "John Doe",
+                text = username ?: "-",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text = "Total Saldo",

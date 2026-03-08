@@ -8,6 +8,7 @@ import id.softnusa.core.domain.repository.AuthRepository
 import id.softnusa.core.domain.util.event.AuthEvent
 import id.softnusa.core.domain.util.Resource
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -97,5 +98,9 @@ class AuthViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    fun getUsername() : Flow<String?> {
+        return repository.getUsername()
     }
 }

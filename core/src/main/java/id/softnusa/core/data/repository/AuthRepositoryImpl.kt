@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
-    private val tokenDataStore: ApplicationDataStore
+    private val dataStore: ApplicationDataStore
 ) : AuthRepository {
 
     override fun login(
@@ -31,13 +31,16 @@ class AuthRepositoryImpl @Inject constructor(
 
             val response = authApi.login(request.toDto())
             val domain = response.toDomain { it.toDomain() }
+            val username = request.username
+
 
             if (!domain.success || domain.data == null) {
                 throw Exception(domain.message)
             }
 
             CoroutineScope(Dispatchers.IO).launch {
-                tokenDataStore.saveToken(domain.data.accessToken)
+                dataStore.saveToken(domain.data.accessToken)
+                dataStore.saveUsername(username)
             }
 
             domain.data
@@ -63,7 +66,7 @@ class AuthRepositoryImpl @Inject constructor(
     override fun logout(): Flow<Resource<ResponseLogin?>> {
         return SafeApiCall.execute {
 
-            val token = tokenDataStore.getToken().first() ?: ""
+            val token = dataStore.getToken().first() ?: ""
             val request = RequestLogout(refreshToken = token)
             val response = authApi.logout(request.toDto())
             val domain = response.toDomain { it.toDomain() }
@@ -72,9 +75,13 @@ class AuthRepositoryImpl @Inject constructor(
                 throw Exception(domain.message)
             }
 
-            tokenDataStore.clearToken()
+            dataStore.clearToken()
 
             domain.data
         }
+    }
+
+    override fun getUsername(): Flow<String?> {
+        return dataStore.getUsername()
     }
 }
