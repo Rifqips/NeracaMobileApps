@@ -1,9 +1,9 @@
 package id.softnusa.neracamobileapps.presentation.transaction
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import id.softnusa.core.domain.model.request.transaction.RequestTransaction
 import id.softnusa.core.domain.repository.TransactionRepository
 import id.softnusa.core.domain.util.Resource
 import id.softnusa.core.domain.util.event.TransactionEvent
@@ -61,12 +61,11 @@ class TransactionViewModel @Inject constructor(
 
     fun updateAmount(value: String) {
 
-        val clean = value.replace("[^0-9]".toRegex(), "")
+        val clean = value.filter { it.isDigit() }
 
         _uiState.value = _uiState.value.copy(
             amount = clean
         )
-
     }
 
     fun updateNote(value: String) {
@@ -99,6 +98,65 @@ class TransactionViewModel @Inject constructor(
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
                                 categories = result.data
+                            )
+
+                        }
+
+                        is Resource.Error -> {
+
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false
+                            )
+
+                            _event.send(
+                                TransactionEvent.ShowSnackbar(result.message)
+                            )
+
+                        }
+                    }
+                }
+        }
+    }
+
+    fun createTransaction() {
+
+        viewModelScope.launch {
+
+            val categoryPayload =
+                if (_uiState.value.selectedCategory == "Lainnya")
+                    _uiState.value.otherCategory
+                else
+                    _uiState.value.selectedCategory
+
+            val apiType = typeMap[_uiState.value.selectedType]
+
+            val request = RequestTransaction(
+                type = apiType.orEmpty(),
+                category = categoryPayload,
+                amount = _uiState.value.amount.toInt(),
+                note = _uiState.value.note
+            )
+
+            repository.createTransaction(request)
+                .collect { result ->
+                    when (result) {
+
+                        is Resource.Loading -> {
+
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = true
+                            )
+
+                        }
+
+                        is Resource.Success -> {
+
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false
+                            )
+
+                            _event.send(
+                                TransactionEvent.TransactionCreated
                             )
 
                         }

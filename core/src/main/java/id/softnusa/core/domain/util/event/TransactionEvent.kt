@@ -6,4 +6,6 @@ sealed class TransactionEvent {
         val message: String
     ) : TransactionEvent()
 
+    object TransactionCreated : TransactionEvent()
+
 }

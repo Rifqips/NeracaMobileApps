@@ -2,8 +2,10 @@ package id.softnusa.core.data.repository
 
 import id.softnusa.core.data.mapper.toDomainList
 import id.softnusa.core.data.mapper.transaction.toDomain
+import id.softnusa.core.data.mapper.transaction.toDto
 import id.softnusa.core.data.remote.api.TransactionApi
 import id.softnusa.core.data.remote.model.response.transaction.ResponseTypeDto
+import id.softnusa.core.domain.model.request.transaction.RequestTransaction
 import id.softnusa.core.domain.model.response.transaction.ResponseType
 import id.softnusa.core.domain.repository.TransactionRepository
 import id.softnusa.core.domain.util.Resource
@@ -31,6 +33,24 @@ class TransactionRepositoryImpl @Inject constructor(
             }
 
             domain.data
+        }
+    }
+
+    override fun createTransaction(
+        request: RequestTransaction
+    ): Flow<Resource<Unit>> {
+
+        return SafeApiCall.execute {
+
+            val response = transactionApi.createTransaction(
+                request.toDto()
+            )
+
+            if (!response.success) {
+                throw Exception(response.message)
+            }
+
+            Unit
         }
     }
 

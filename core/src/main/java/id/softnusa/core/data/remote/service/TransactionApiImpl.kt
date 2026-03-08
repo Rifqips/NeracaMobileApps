@@ -3,12 +3,17 @@ package id.softnusa.core.data.remote.service
 import id.softnusa.core.data.local.datastore.ApplicationDataStore
 import id.softnusa.core.data.remote.api.TransactionApi
 import id.softnusa.core.data.remote.model.BaseResponseDto
+import id.softnusa.core.data.remote.model.request.transaction.RequestTransactionDto
 import id.softnusa.core.data.remote.model.response.transaction.ResponseTypeDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -31,6 +36,22 @@ class TransactionApiImpl @Inject constructor(
             search?.let {
                 parameter("search", it)
             }
+
+        }.body()
+    }
+
+    override suspend fun createTransaction(
+        request: RequestTransactionDto
+    ): BaseResponseDto<Unit> {
+
+        val token = tokenDataStore.getToken().first()
+
+        return client.post("api/v1/transactions") {
+
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+
+            setBody(request)
 
         }.body()
     }
