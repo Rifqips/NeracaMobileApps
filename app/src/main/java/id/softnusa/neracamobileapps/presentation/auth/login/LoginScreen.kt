@@ -1,10 +1,5 @@
 package id.softnusa.neracamobileapps.presentation.auth.login
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
@@ -34,19 +28,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import id.softnusa.core.domain.util.event.AuthEvent
 import id.softnusa.neracamobileapps.R
+import id.softnusa.neracamobileapps.presentation.auth.AuthViewModel
+import id.softnusa.neracamobileapps.presentation.permission.AppPermission
+import id.softnusa.neracamobileapps.presentation.permission.PermissionHandler
 import id.softnusa.neracamobileapps.presentation.ui.component.AppButton
+import id.softnusa.neracamobileapps.presentation.ui.component.AppPasswordField
+import id.softnusa.neracamobileapps.presentation.ui.component.AppSnackbarHost
 import id.softnusa.neracamobileapps.presentation.ui.component.AppTextField
+import id.softnusa.neracamobileapps.presentation.ui.component.showSnackbarAsync
 import id.softnusa.neracamobileapps.presentation.ui.theme.Primary
 import id.softnusa.neracamobileapps.presentation.ui.theme.TextSecondary
 import kotlinx.coroutines.launch
-import id.softnusa.neracamobileapps.presentation.auth.AuthViewModel
-import id.softnusa.neracamobileapps.presentation.ui.component.AppPasswordField
-import id.softnusa.neracamobileapps.presentation.ui.component.AppSnackbarHost
-import id.softnusa.neracamobileapps.presentation.ui.component.showSnackbarAsync
 
 @Composable
 fun LoginScreen(
@@ -93,32 +88,16 @@ fun LoginScreen(
         }
     }
 
-    val notificationLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission()
-        ) { granted ->
-            if (!granted) {
-                scope.launch {
-                    snackbarHostState.showSnackbar(permissionDeniedText)
-                }
+    PermissionHandler(
+        permission = AppPermission.Notification,
+        onGranted = {},
+        onDenied = {
+            scope.launch {
+                snackbarHostState.showSnackbar(permissionDeniedText)
             }
         }
+    )
 
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-
-            val granted = ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-
-            if (!granted) {
-                notificationLauncher.launch(
-                    Manifest.permission.POST_NOTIFICATIONS
-                )
-            }
-        }
-    }
     Scaffold(
         snackbarHost = { AppSnackbarHost(snackbarHostState) }
     ) { padding ->
