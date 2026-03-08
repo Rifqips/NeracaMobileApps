@@ -4,6 +4,7 @@ import id.softnusa.core.data.local.datastore.ApplicationDataStore
 import id.softnusa.core.data.remote.api.TransactionApi
 import id.softnusa.core.data.remote.model.BaseResponseDto
 import id.softnusa.core.data.remote.model.request.transaction.RequestTransactionDto
+import id.softnusa.core.data.remote.model.response.transaction.ResponseHistoryDto
 import id.softnusa.core.data.remote.model.response.transaction.ResponseTypeDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -52,6 +53,28 @@ class TransactionApiImpl @Inject constructor(
             contentType(ContentType.Application.Json)
 
             setBody(request)
+
+        }.body()
+    }
+
+    override suspend fun getHistory(
+        page: Int,
+        size: Int,
+        search: String
+    ): ResponseHistoryDto {
+
+        val token = tokenDataStore.getToken().first()
+
+        return client.get("api/v1/transactions") {
+
+            header("Authorization", "Bearer $token")
+
+            parameter("page", page)
+            parameter("size", size)
+
+            if (search.isNotBlank()) {
+                parameter("search", search)
+            }
 
         }.body()
     }

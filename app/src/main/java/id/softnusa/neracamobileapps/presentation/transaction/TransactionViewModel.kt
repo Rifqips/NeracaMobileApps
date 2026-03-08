@@ -2,14 +2,19 @@ package id.softnusa.neracamobileapps.presentation.transaction
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.softnusa.core.domain.model.request.transaction.RequestTransaction
 import id.softnusa.core.domain.repository.TransactionRepository
 import id.softnusa.core.domain.util.Resource
 import id.softnusa.core.domain.util.event.TransactionEvent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,10 +30,19 @@ class TransactionViewModel @Inject constructor(
     private val _event = Channel<TransactionEvent>()
     val event = _event.receiveAsFlow()
 
+
+    private val _search = MutableStateFlow("")
+    val search = _search.asStateFlow()
+
+
     private val typeMap = mapOf(
         "Pemasukan" to "income",
         "Pengeluaran" to "expense"
     )
+
+    fun updateSearch(query: String) {
+        _search.value = query
+    }
 
     fun selectType(type: String) {
 
@@ -176,5 +190,13 @@ class TransactionViewModel @Inject constructor(
                 }
         }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    val historyPaging = search
+        .debounce(500)
+        .flatMapLatest { query ->
+            repository.getHistory(query)
+        }
+        .cachedIn(viewModelScope)
 
 }

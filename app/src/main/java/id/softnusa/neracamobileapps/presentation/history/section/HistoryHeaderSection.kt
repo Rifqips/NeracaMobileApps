@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HistoryHeaderSection(
+    search: String,
+    onSearchChange: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
 
@@ -88,8 +90,8 @@ fun HistoryHeaderSection(
              * SEARCH BAR
              */
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = search,
+                onValueChange = onSearchChange,
                 placeholder = {
                     Text(
                         "Cari transaksi",

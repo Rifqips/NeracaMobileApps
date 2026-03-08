@@ -58,4 +58,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     testImplementation(kotlin("test"))
+
+    api("androidx.paging:paging-runtime-ktx:3.2.1")
+    api("androidx.paging:paging-compose:3.3.0")
 }
