@@ -37,7 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import id.softnusa.core.domain.util.AuthEvent
+import id.softnusa.core.domain.util.event.AuthEvent
 import id.softnusa.neracamobileapps.R
 import id.softnusa.neracamobileapps.presentation.ui.component.AppButton
 import id.softnusa.neracamobileapps.presentation.ui.component.AppTextField

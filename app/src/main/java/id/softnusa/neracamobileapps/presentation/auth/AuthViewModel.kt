@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.softnusa.core.domain.model.request.auth.RequestLogin
 import id.softnusa.core.domain.repository.AuthRepository
-import id.softnusa.core.domain.util.AuthEvent
+import id.softnusa.core.domain.util.event.AuthEvent
 import id.softnusa.core.domain.util.Resource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

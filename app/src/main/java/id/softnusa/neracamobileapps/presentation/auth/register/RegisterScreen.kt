@@ -35,7 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import id.softnusa.core.domain.util.AuthEvent
+import id.softnusa.core.domain.util.event.AuthEvent
 import id.softnusa.core.domain.util.calculatePasswordStrength
 import id.softnusa.core.domain.util.isValidEmail
 import id.softnusa.neracamobileapps.R

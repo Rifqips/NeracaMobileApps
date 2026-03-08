@@ -13,3 +13,13 @@ fun <T, R> BaseResponseDto<T>.toDomain(
         data = data?.let { transform(it) }
     )
 }
+
+fun <T, R> BaseResponseDto<List<T>>.toDomainList(
+    transform: (T) -> R
+): BaseResponse<List<R>> {
+    return BaseResponse(
+        success = success,
+        message = message,
+        data = data?.map(transform)
+    )
+}

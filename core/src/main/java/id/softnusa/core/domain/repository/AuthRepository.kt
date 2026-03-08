@@ -1,7 +1,6 @@
 package id.softnusa.core.domain.repository
 
 import id.softnusa.core.domain.model.request.auth.RequestLogin
-import id.softnusa.core.domain.model.request.auth.RequestLogout
 import id.softnusa.core.domain.model.response.auth.ResponseLogin
 import id.softnusa.core.domain.util.Resource
 import kotlinx.coroutines.flow.Flow

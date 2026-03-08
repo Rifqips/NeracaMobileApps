@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import id.softnusa.core.domain.util.AuthEvent
+import id.softnusa.core.domain.util.event.AuthEvent
 import id.softnusa.neracamobileapps.presentation.mainfeature.profile.section.ProfileMiscSection
 import id.softnusa.neracamobileapps.presentation.mainfeature.profile.section.LogoutSection
 import id.softnusa.neracamobileapps.presentation.mainfeature.profile.section.ProfileAccountSection

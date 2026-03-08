@@ -7,8 +7,8 @@ import dagger.Module
 import dagger.Provides
 import id.softnusa.core.data.local.datastore.ApplicationDataStore
 import id.softnusa.core.data.remote.model.BaseResponseDto
-import id.softnusa.core.data.remote.model.request.prelogin.RequestTokentDto
-import id.softnusa.core.data.remote.model.response.prelogin.ResponseLoginDto
+import id.softnusa.core.data.remote.model.request.auth.RequestTokentDto
+import id.softnusa.core.data.remote.model.response.auth.ResponseLoginDto
 import id.softnusa.core.di.qualifier.BaseUrl
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation

@@ -1,13 +1,12 @@
-package id.softnusa.core.data.remote.model.response.prelogin
+package id.softnusa.core.data.remote.model.request.auth
 
+import androidx.annotation.Keep
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Keep
 @Serializable
-data class ResponseLoginDto(
-    @SerialName("accessToken")
-    val accessToken: String,
-
+data class RequestLogoutDto(
     @SerialName("refreshToken")
     val refreshToken: String
 )

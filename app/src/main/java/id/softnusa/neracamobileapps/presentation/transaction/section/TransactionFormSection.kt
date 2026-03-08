@@ -1,70 +1,53 @@
 package id.softnusa.neracamobileapps.presentation.transaction.section
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import id.softnusa.core.domain.util.formatRupiah
+import id.softnusa.neracamobileapps.presentation.transaction.TransactionViewModel
 import id.softnusa.neracamobileapps.presentation.ui.component.AppButton
 import id.softnusa.neracamobileapps.presentation.ui.component.AppTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransactionFormSection() {
+fun TransactionFormSection(
+    viewModel: TransactionViewModel = hiltViewModel()
+) {
 
-    var selectedType by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("") }
-
-    var otherCategory by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
-    var note by remember { mutableStateOf("") }
+    val state by viewModel.uiState.collectAsState()
 
     var expandedType by remember { mutableStateOf(false) }
     var expandedCategory by remember { mutableStateOf(false) }
 
     val types = listOf("Pemasukan", "Pengeluaran")
 
-    val categories = listOf(
-        "Gaji",
-        "Bayar Listrik",
-        "Modal Awal",
-        "Transport",
-        "Lainnya"
-    )
+    val categories = state.categories.map { it.name } + "Lainnya"
 
     val isFormValid =
-        selectedType.isNotBlank() &&
-                selectedCategory.isNotBlank() &&
-                amount.isNotBlank()
+        state.selectedType.isNotBlank() &&
+                state.selectedCategory.isNotBlank() &&
+                state.amount.isNotBlank()
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
 
+        AnimatedVisibility(state.isLoading) {
+
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth()
+            )
+
+        }
+
         /**
-         * TYPE DROPDOWN
+         * TYPE
          */
 
         ExposedDropdownMenuBox(
@@ -73,14 +56,12 @@ fun TransactionFormSection() {
         ) {
 
             OutlinedTextField(
-                value = selectedType,
+                value = state.selectedType,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Pilih tipe transaksi") },
                 trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(
-                        expanded = expandedType
-                    )
+                    ExposedDropdownMenuDefaults.TrailingIcon(expandedType)
                 },
                 modifier = Modifier
                     .menuAnchor()
@@ -97,36 +78,42 @@ fun TransactionFormSection() {
                     DropdownMenuItem(
                         text = { Text(it) },
                         onClick = {
-                            selectedType = it
+
                             expandedType = false
+                            viewModel.selectType(it)
+
                         }
                     )
-
                 }
+
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
+        Spacer(Modifier.height(16.dp))
 
         /**
-         * CATEGORY DROPDOWN
+         * CATEGORY
          */
 
         ExposedDropdownMenuBox(
             expanded = expandedCategory,
-            onExpandedChange = { expandedCategory = !expandedCategory }
+            onExpandedChange = {
+
+                if (state.selectedType.isNotBlank()) {
+                    expandedCategory = !expandedCategory
+                }
+
+            }
         ) {
 
             OutlinedTextField(
-                value = selectedCategory,
+                value = state.selectedCategory,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Pilih jenis transaksi") },
+                enabled = state.selectedType.isNotBlank(),
+                label = { Text("Pilih kategori") },
                 trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(
-                        expanded = expandedCategory
-                    )
+                    ExposedDropdownMenuDefaults.TrailingIcon(expandedCategory)
                 },
                 modifier = Modifier
                     .menuAnchor()
@@ -143,52 +130,39 @@ fun TransactionFormSection() {
                     DropdownMenuItem(
                         text = { Text(it) },
                         onClick = {
-                            selectedCategory = it
+
                             expandedCategory = false
+                            viewModel.selectCategory(it)
+
                         }
                     )
-
                 }
+
             }
         }
 
-
-        /**
-         * OTHER CATEGORY
-         */
-
-        AnimatedVisibility(
-            visible = selectedCategory == "Lainnya"
-        ) {
+        AnimatedVisibility(state.selectedCategory == "Lainnya") {
 
             Column {
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(Modifier.height(16.dp))
 
                 AppTextField(
-                    value = otherCategory,
-                    onValueChange = { otherCategory = it },
+                    value = state.otherCategory,
+                    onValueChange = viewModel::updateOtherCategory,
                     label = "Jenis lainnya"
                 )
+
             }
+
         }
 
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-
-        /**
-         * NOMINAL FIELD
-         */
+        Spacer(Modifier.height(16.dp))
 
         AppTextField(
-            value = if (amount.isEmpty()) "" else formatRupiah(amount.toLong()),
-            onValueChange = {
-
-                val cleanInput = it.replace("[^0-9]".toRegex(), "")
-                amount = cleanInput
-
-            },
+            value = if (state.amount.isEmpty()) ""
+            else formatRupiah(state.amount.toLong()),
+            onValueChange = viewModel::updateAmount,
             label = "Nominal",
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -196,27 +170,15 @@ fun TransactionFormSection() {
             )
         )
 
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-
-        /**
-         * NOTE
-         */
+        Spacer(Modifier.height(16.dp))
 
         AppTextField(
-            value = note,
-            onValueChange = { note = it },
+            value = state.note,
+            onValueChange = viewModel::updateNote,
             label = "Catatan"
         )
 
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-
-        /**
-         * BUTTON
-         */
+        Spacer(Modifier.height(28.dp))
 
         AppButton(
             text = "Simpan Transaksi",
@@ -224,23 +186,25 @@ fun TransactionFormSection() {
             onClick = {
 
                 val categoryPayload =
-                    if (selectedCategory == "Lainnya")
-                        otherCategory
+                    if (state.selectedCategory == "Lainnya")
+                        state.otherCategory
                     else
-                        selectedCategory
+                        state.selectedCategory
 
                 val payload = mapOf(
-                    "type" to selectedType,
+                    "type" to state.selectedType,
                     "category" to categoryPayload,
-                    "amount" to amount,
-                    "note" to note
+                    "amount" to state.amount,
+                    "note" to state.note
                 )
 
                 println(payload)
+
             }
         )
 
+        Spacer(Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
     }
+
 }

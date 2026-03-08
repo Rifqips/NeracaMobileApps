@@ -1,4 +1,4 @@
-package id.softnusa.core.data.remote.model.request.prelogin
+package id.softnusa.core.data.remote.model.request.auth
 
 import androidx.annotation.Keep
 import kotlinx.serialization.SerialName

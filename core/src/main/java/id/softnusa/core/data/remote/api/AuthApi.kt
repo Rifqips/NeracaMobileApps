@@ -1,10 +1,9 @@
 package id.softnusa.core.data.remote.api
 
 import id.softnusa.core.data.remote.model.BaseResponseDto
-import id.softnusa.core.data.remote.model.request.prelogin.RequestLoginDto
-import id.softnusa.core.data.remote.model.request.prelogin.RequestLogoutDto
-import id.softnusa.core.data.remote.model.response.prelogin.ResponseLoginDto
-import id.softnusa.core.domain.model.request.auth.RequestLogout
+import id.softnusa.core.data.remote.model.request.auth.RequestLoginDto
+import id.softnusa.core.data.remote.model.request.auth.RequestLogoutDto
+import id.softnusa.core.data.remote.model.response.auth.ResponseLoginDto
 
 interface AuthApi {
 
