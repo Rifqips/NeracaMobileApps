@@ -1,35 +1,30 @@
 package id.softnusa.core.di
 
 import android.content.Context
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import id.softnusa.core.data.local.datastore.ApplicationDataStore
-import id.softnusa.core.data.remote.model.BaseResponseDto
-import id.softnusa.core.data.remote.model.request.auth.RequestTokentDto
-import id.softnusa.core.data.remote.model.response.auth.ResponseLoginDto
+import id.softnusa.core.data.remote.api.AuthApi
 import id.softnusa.core.di.qualifier.BaseUrl
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
-import javax.inject.Singleton
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
 import kotlinx.coroutines.flow.first
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.call.body
-import io.ktor.client.engine.okhttp.OkHttp
+import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
-import com.chuckerteam.chucker.api.ChuckerInterceptor
-import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -40,6 +35,7 @@ object NetworkModule {
     fun provideHttpClient(
         @ApplicationContext context: Context,
         tokenDataStore: ApplicationDataStore,
+        api: AuthApi,
         @BaseUrl baseUrl: String
     ): HttpClient {
 
@@ -63,52 +59,31 @@ object NetworkModule {
             }
 
             install(Auth) {
-
                 bearer {
 
+                    sendWithoutRequest { true }
+
                     loadTokens {
+                        val access = tokenDataStore.getToken().first()
+                        val refresh = tokenDataStore.getRefreshToken().first()
 
-                        val token = tokenDataStore.getToken().first()
-
-                        token?.let {
-                            BearerTokens(
-                                accessToken = it,
-                                refreshToken = ""
-                            )
-                        }
+                        if (access != null && refresh != null) {
+                            BearerTokens(access, refresh)
+                        } else null
                     }
 
                     refreshTokens {
 
-                        val oldRefreshToken = oldTokens?.refreshToken
-                            ?: return@refreshTokens null
+                        val refreshToken = oldTokens?.refreshToken ?: return@refreshTokens null
 
-                        try {
+                        val response = api.refreshToken(refreshToken)
 
-                            val response: BaseResponseDto<ResponseLoginDto> =
-                                client.post("auth/refresh") {
-                                    setBody(
-                                        RequestTokentDto(
-                                            refreshToken = oldRefreshToken
-                                        )
-                                    )
-                                }.body()
+                        val newAccess = response.data?.accessToken ?: return@refreshTokens null
+                        val newRefresh = response.data.refreshToken
 
-                            val newAccess = response.data?.accessToken
-                                ?: return@refreshTokens null
+                        tokenDataStore.saveTokens(newAccess, newRefresh)
 
-                            val newRefresh = response.data.refreshToken
-
-                            tokenDataStore.saveToken(newAccess)
-
-                            BearerTokens(
-                                accessToken = newAccess,
-                                refreshToken = newRefresh
-                            )
-
-                        } catch (e: Exception) {
-                            null
-                        }
+                        BearerTokens(newAccess, newRefresh)
                     }
                 }
             }

@@ -39,7 +39,10 @@ class AuthRepositoryImpl @Inject constructor(
             }
 
             CoroutineScope(Dispatchers.IO).launch {
-                dataStore.saveToken(domain.data.accessToken)
+                dataStore.saveTokens(
+                    domain.data.accessToken,
+                    domain.data.refreshToken
+                )
                 dataStore.saveUsername(username)
             }
 

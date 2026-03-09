@@ -5,7 +5,12 @@ import kotlinx.coroutines.flow.Flow
 interface ApplicationDataStore {
 
 
-    suspend fun saveToken(token: String)
+    suspend fun saveTokens(
+        accessToken: String,
+        refreshToken: String
+    )
+
+    fun getRefreshToken(): Flow<String?>
 
     fun getToken(): Flow<String?>
 

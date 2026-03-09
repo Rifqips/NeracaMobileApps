@@ -17,14 +17,25 @@ class ApplicationDataStoreImpl @Inject constructor(
         private val TOKEN_KEY = stringPreferencesKey("auth_token")
 
         private val USERNAME_KEY = stringPreferencesKey("username_key")
+        private val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token_key")
 
         private val ONBOARDING_KEY =
             booleanPreferencesKey("onboarding_completed")
     }
 
-    override suspend fun saveToken(token: String) {
-        dataStore.edit { preferences ->
-            preferences[TOKEN_KEY] = token
+    override suspend fun saveTokens(
+        accessToken: String,
+        refreshToken: String
+    ) {
+        dataStore.edit {
+            it[TOKEN_KEY] = accessToken
+            it[TOKEN_KEY] = refreshToken
+        }
+    }
+
+    override fun getRefreshToken(): Flow<String?> {
+        return dataStore.data.map { preferences ->
+            preferences[REFRESH_TOKEN_KEY]
         }
     }
 
