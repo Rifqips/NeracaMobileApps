@@ -1,5 +1,6 @@
 package id.softnusa.neracamobileapps.presentation.transaction
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
@@ -96,6 +97,8 @@ class TransactionViewModel @Inject constructor(
 
             repository.getCategories(type)
                 .collect { result ->
+
+                    Log.d("check-data", "getCategories: $result")
 
                     when (result) {
 

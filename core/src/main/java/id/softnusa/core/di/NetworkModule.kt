@@ -9,19 +9,22 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import id.softnusa.core.data.local.datastore.ApplicationDataStore
 import id.softnusa.core.data.remote.api.AuthApi
+import id.softnusa.core.data.remote.api.TransactionApi
+import id.softnusa.core.data.remote.interceptor.AuthInterceptor
+import id.softnusa.core.data.remote.interceptor.RefreshInterceptor
+import id.softnusa.core.data.remote.interceptor.TokenAuthenticator
+import id.softnusa.core.data.remote.service.AuthApiImpl
+import id.softnusa.core.data.remote.service.TransactionApiImpl
 import id.softnusa.core.di.qualifier.BaseUrl
+import id.softnusa.core.di.qualifier.RefreshClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import javax.inject.Singleton
@@ -34,8 +37,9 @@ object NetworkModule {
     @Singleton
     fun provideHttpClient(
         @ApplicationContext context: Context,
-        tokenDataStore: ApplicationDataStore,
-        api: AuthApi,
+        authInterceptor: AuthInterceptor,
+        refreshInterceptor: RefreshInterceptor,
+        authenticator: TokenAuthenticator,
         @BaseUrl baseUrl: String
     ): HttpClient {
 
@@ -43,6 +47,9 @@ object NetworkModule {
 
             engine {
                 preconfigured = OkHttpClient.Builder()
+                    .addInterceptor(authInterceptor)
+                    .addInterceptor(refreshInterceptor)
+                    .authenticator(authenticator)
                     .addInterceptor(
                         ChuckerInterceptor.Builder(context)
                             .alwaysReadResponseBody(true)
@@ -58,34 +65,38 @@ object NetworkModule {
                 })
             }
 
-            install(Auth) {
-                bearer {
+            defaultRequest {
+                url(baseUrl)
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+            }
+        }
+    }
 
-                    sendWithoutRequest { true }
 
-                    loadTokens {
-                        val access = tokenDataStore.getToken().first()
-                        val refresh = tokenDataStore.getRefreshToken().first()
+    @Provides
+    @Singleton
+    @RefreshClient
+    fun provideRefreshHttpClient(
+        @ApplicationContext context: Context,
+        @BaseUrl baseUrl: String
+    ): HttpClient {
 
-                        if (access != null && refresh != null) {
-                            BearerTokens(access, refresh)
-                        } else null
-                    }
+        return HttpClient(OkHttp) {
 
-                    refreshTokens {
+            engine {
+                preconfigured = OkHttpClient.Builder()
+                    .addInterceptor(
+                        ChuckerInterceptor.Builder(context).build()
+                    )
+                    .build()
+            }
 
-                        val refreshToken = oldTokens?.refreshToken ?: return@refreshTokens null
-
-                        val response = api.refreshToken(refreshToken)
-
-                        val newAccess = response.data?.accessToken ?: return@refreshTokens null
-                        val newRefresh = response.data.refreshToken
-
-                        tokenDataStore.saveTokens(newAccess, newRefresh)
-
-                        BearerTokens(newAccess, newRefresh)
-                    }
-                }
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                })
             }
 
             defaultRequest {
@@ -95,4 +106,22 @@ object NetworkModule {
             }
         }
     }
+
+    @Provides
+    @Singleton
+    fun provideAuthApi(
+        @RefreshClient client: HttpClient
+    ): AuthApi {
+        return AuthApiImpl(client)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionApi(
+        client: HttpClient,
+        dataStore: ApplicationDataStore
+    ): TransactionApi {
+        return TransactionApiImpl(client, dataStore)
+    }
+
 }

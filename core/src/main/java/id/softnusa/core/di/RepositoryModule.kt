@@ -25,18 +25,9 @@ abstract class RepositoryModule {
     ): AuthRepository
 
     @Binds
-    abstract fun bindAuthApi(
-        impl: AuthApiImpl
-    ): AuthApi
-
-    @Binds
     @Singleton
     abstract fun bindTransactionRepository(
         impl: TransactionRepositoryImpl
     ): TransactionRepository
 
-    @Binds
-    abstract fun bindTransactionApi(
-        impl: TransactionApiImpl
-    ): TransactionApi
 }

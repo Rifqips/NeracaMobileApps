@@ -5,6 +5,8 @@ import id.softnusa.core.data.mapper.auth.toDomain
 import id.softnusa.core.data.mapper.auth.toDto
 import id.softnusa.core.data.mapper.toDomain
 import id.softnusa.core.data.remote.api.AuthApi
+import id.softnusa.core.data.remote.model.BaseResponseDto
+import id.softnusa.core.domain.model.BaseResponse
 import id.softnusa.core.domain.model.request.auth.RequestLogin
 import id.softnusa.core.domain.model.request.auth.RequestLogout
 import id.softnusa.core.domain.model.response.auth.ResponseLogin
@@ -16,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -64,6 +67,24 @@ class AuthRepositoryImpl @Inject constructor(
             }
             domain.data
         }
+    }
+
+    override fun refreshToken(refreshToken: String): BaseResponse<ResponseLogin> {
+
+        val response = runBlocking {
+            authApi.refreshToken(refreshToken)
+        }
+
+        runBlocking {
+            response.data?.let {
+                dataStore.saveTokens(
+                    it.accessToken,
+                    it.refreshToken
+                )
+            }
+        }
+
+        return response.toDomain{it.toDomain()}
     }
 
     override fun logout(): Flow<Resource<ResponseLogin?>> {

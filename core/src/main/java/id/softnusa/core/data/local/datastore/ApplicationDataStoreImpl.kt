@@ -29,7 +29,7 @@ class ApplicationDataStoreImpl @Inject constructor(
     ) {
         dataStore.edit {
             it[TOKEN_KEY] = accessToken
-            it[TOKEN_KEY] = refreshToken
+            it[REFRESH_TOKEN_KEY] = refreshToken
         }
     }
 
